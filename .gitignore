@@ -1,0 +1,19 @@
+# ビルド成果物
+*.exe
+*.o
+*.obj
+
+# CMake ビルドフォルダ
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+*.cmake
+
+# IDE
+.vscode/
+.idea/
+
+# Windows
+Thumbs.db
+Desktop.ini
