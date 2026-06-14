@@ -59,7 +59,10 @@ src/
 ## よく使うコマンド
 
 ```bash
-# ビルド（新ファイルを追加した場合は src/XXX.cpp を追記）
+# 【一番簡単】ビルド＆起動を一発で（w64devkit から）
+sh scripts/build.sh
+
+# ビルドのみ（新ファイルを追加した場合は src/XXX.cpp を追記）
 g++ src/main.cpp src/Renderer.cpp src/Tetromino.cpp src/Board.cpp src/GameState.cpp -o tetris.exe \
   -I C:/raylib/raylib-6.0_win64_mingw-w64/include \
   -L C:/raylib/raylib-6.0_win64_mingw-w64/lib \
