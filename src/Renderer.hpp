@@ -16,10 +16,13 @@ public:
     void drawLockedCells(const Board& board);
     void drawGhost(const Tetromino& t);
     void drawPiece(const Tetromino& t);
+    void drawHoldPanel(TetrominoType holdType);
+    void drawNextPanel(TetrominoType nextType);
 
 private:
     Font jpFont_;
     bool fontOwned_;
 
     void drawCell(int col, int row, Color c);
+    void drawMiniPiece(TetrominoType type, int cx, int cy);
 };

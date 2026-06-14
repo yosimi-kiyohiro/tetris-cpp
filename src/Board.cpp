@@ -49,3 +49,8 @@ TetrominoType Board::nextType() {
     if (bagIdx_ >= bag_.size()) refillBag();
     return bag_[bagIdx_++];
 }
+
+TetrominoType Board::peekNext() {
+    if (bagIdx_ >= bag_.size()) refillBag();
+    return bag_[bagIdx_];  // bagIdx_ を進めない
+}

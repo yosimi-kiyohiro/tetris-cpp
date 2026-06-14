@@ -16,6 +16,8 @@ int main() {
         renderer.drawLockedCells(game.board());
         renderer.drawGhost(ghost);
         renderer.drawPiece(game.current());
+        renderer.drawHoldPanel(game.holdType());
+        renderer.drawNextPanel(game.nextPeek());
         renderer.endFrame();
     }
 

@@ -12,6 +12,7 @@ public:
     void          lock(const Tetromino& t);
     TetrominoType cell(int row, int col) const;
     TetrominoType nextType();
+    TetrominoType peekNext();  // 消費せず次のタイプを覗く
 
 private:
     TetrominoType grid_[BOARD_ROWS][BOARD_COLS];
