@@ -63,7 +63,24 @@ void Renderer::drawBoard() {
 
     // 盤面の外枠
     DrawRectangleLines(BOARD_X, BOARD_Y, BOARD_W, BOARD_H, WHITE);
+}
 
-    // 日本語フォント動作確認用テキスト
-    DrawTextEx(jpFont_, "ブロックドロップ", {(float)BOARD_X, 12.0f}, 20, 1, WHITE);
+void Renderer::drawCell(int col, int row, Color c) {
+    int x = BOARD_X + col * CELL_SIZE;
+    int y = BOARD_Y + row * CELL_SIZE;
+    DrawRectangle(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2, c);
+}
+
+void Renderer::drawLockedCells(const Board& board) {
+    for (int r = 0; r < BOARD_ROWS; r++)
+        for (int c = 0; c < BOARD_COLS; c++)
+            if (board.cell(r, c) != TetrominoType::None)
+                drawCell(c, r, typeToColor(board.cell(r, c)));
+}
+
+void Renderer::drawPiece(const Tetromino& t) {
+    for (int r = 0; r < (int)t.shape.size(); r++)
+        for (int c = 0; c < (int)t.shape[r].size(); c++)
+            if (t.shape[r][c] && t.y + r >= 0)
+                drawCell(t.x + c, t.y + r, typeToColor(t.type));
 }
