@@ -17,3 +17,10 @@ CMakeCache.txt
 # Windows
 Thumbs.db
 Desktop.ini
+
+# vcpkg（MinGW 版では不使用）
+vcpkg.json
+vcpkg_installed/
+
+# スクリーンショット・一時ファイル
+screenshot.png

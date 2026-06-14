@@ -1,17 +1,13 @@
-#include "raylib.h"
+#include "Renderer.hpp"
 
 int main() {
-    InitWindow(800, 600, "Hello Tetris C++!");
-    SetTargetFPS(60);
+    Renderer renderer;
 
-    while (!WindowShouldClose()) {
-        PollInputEvents();
-        BeginDrawing();
-        ClearBackground(DARKBLUE);
-        DrawText("Hello, Tetris C++!", 220, 270, 30, WHITE);
-        EndDrawing();
+    while (!renderer.shouldClose()) {
+        renderer.beginFrame();
+        renderer.drawBoard();
+        renderer.endFrame();
     }
 
-    CloseWindow();
     return 0;
 }
