@@ -29,7 +29,7 @@ g++ src/main.cpp src/Renderer.cpp src/Tetromino.cpp src/Board.cpp src/GameState.
 | 1 | Renderer・日本語フォント・盤面グリッド | ✅ 完了 |
 | 2 | Tetromino/Board・7bag・落下 | ✅ 完了 |
 | 3a | キー操作・衝突・回転・ゴースト | ✅ 完了 |
-| 3b | NEXT/HOLD・ロック遅延 | ⬜ |
+| 3b | NEXT/HOLD・ロック遅延 | ✅ 完了 |
 | 4 | ライン消去・スコア・ゲームオーバー | ⬜ |
 | 5〜9 | 演出・音・パーティクル・Web版 | ⬜ |
 
