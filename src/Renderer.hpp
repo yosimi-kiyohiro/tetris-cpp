@@ -14,6 +14,7 @@ public:
     void endFrame();
     void drawBoard();
     void drawLockedCells(const Board& board);
+    void drawGhost(const Tetromino& t);
     void drawPiece(const Tetromino& t);
 
 private:

@@ -78,6 +78,22 @@ void Renderer::drawLockedCells(const Board& board) {
                 drawCell(c, r, typeToColor(board.cell(r, c)));
 }
 
+void Renderer::drawGhost(const Tetromino& t) {
+    Color ghostFill    = typeToColor(t.type);
+    Color ghostOutline = typeToColor(t.type);
+    ghostFill.a = 60;
+
+    for (int r = 0; r < (int)t.shape.size(); r++) {
+        for (int c = 0; c < (int)t.shape[r].size(); c++) {
+            if (!t.shape[r][c] || t.y + r < 0) continue;
+            int x = BOARD_X + (t.x + c) * CELL_SIZE;
+            int y = BOARD_Y + (t.y + r) * CELL_SIZE;
+            DrawRectangle(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2, ghostFill);
+            DrawRectangleLines(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2, ghostOutline);
+        }
+    }
+}
+
 void Renderer::drawPiece(const Tetromino& t) {
     for (int r = 0; r < (int)t.shape.size(); r++)
         for (int c = 0; c < (int)t.shape[r].size(); c++)
