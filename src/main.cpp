@@ -9,15 +9,25 @@ int main() {
         game.handleInput();
         game.update(GetFrameTime());
 
-        Tetromino ghost = game.calcGhost();
-
         renderer.beginFrame();
         renderer.drawBoard();
         renderer.drawLockedCells(game.board());
-        renderer.drawGhost(ghost);
-        renderer.drawPiece(game.current());
+
+        // スタート済みでゲームオーバーでない間だけピース・ゴーストを描く
+        if (game.isStarted() && !game.isGameOver()) {
+            renderer.drawGhost(game.calcGhost());
+            renderer.drawPiece(game.current());
+        }
+
         renderer.drawHoldPanel(game.holdType());
         renderer.drawNextPanel(game.nextPeek());
+        renderer.drawScorePanel(game.score(), game.highScore(),
+                                game.level(), game.linesCleared());
+
+        if (!game.isStarted())      renderer.drawStartOverlay(game.savedLevel());
+        else if (game.isPaused())   renderer.drawPauseOverlay();
+        else if (game.isGameOver()) renderer.drawGameOverOverlay(game.savedLevel());
+
         renderer.endFrame();
     }
 

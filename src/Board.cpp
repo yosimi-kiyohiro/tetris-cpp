@@ -38,6 +38,32 @@ void Board::lock(const Tetromino& t) {
     }
 }
 
+int Board::clearLines() {
+    int cleared = 0;
+    // 下から上へスキャンする。上から消すと削除後のシフトで未チェック行が生まれるため、
+    // 下から消すことで「詰めた後の同じ行インデックス」を正しく再チェックできる。
+    for (int r = BOARD_ROWS - 1; r >= 0; ) {
+        bool full = true;
+        for (int c = 0; c < BOARD_COLS; c++) {
+            if (grid_[r][c] == TetrominoType::None) { full = false; break; }
+        }
+        if (full) {
+            // r より上の行を1段ずつ下へずらす
+            for (int rr = r; rr > 0; rr--)
+                for (int c = 0; c < BOARD_COLS; c++)
+                    grid_[rr][c] = grid_[rr - 1][c];
+            // 最上行を空にする
+            for (int c = 0; c < BOARD_COLS; c++)
+                grid_[0][c] = TetrominoType::None;
+            cleared++;
+            // r を進めない（シフト後、同じインデックスに新しい行が降りてくる）
+        } else {
+            r--;
+        }
+    }
+    return cleared;
+}
+
 void Board::refillBag() {
     bag_ = { TetrominoType::I, TetrominoType::O, TetrominoType::T,
              TetrominoType::S, TetrominoType::Z, TetrominoType::J, TetrominoType::L };

@@ -18,6 +18,10 @@ public:
     void drawPiece(const Tetromino& t);
     void drawHoldPanel(TetrominoType holdType);
     void drawNextPanel(TetrominoType nextType);
+    void drawScorePanel(int score, int highScore, int level, int lines);
+    void drawStartOverlay(int savedLevel);
+    void drawPauseOverlay();
+    void drawGameOverOverlay(int savedLevel);
 
 private:
     Font jpFont_;

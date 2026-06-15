@@ -9,7 +9,7 @@ constexpr int BOARD_H    = CELL_SIZE * BOARD_ROWS;  // 640
 
 // レイアウト
 constexpr int PANEL_W    = 120;  // HOLD / NEXT パネル幅
-constexpr int TOP_H      = 48;   // スコア表示エリア
+constexpr int TOP_H      = 70;   // スコア表示エリア
 constexpr int BOTTOM_H   = 16;   // 下余白
 
 // ウィンドウ全体

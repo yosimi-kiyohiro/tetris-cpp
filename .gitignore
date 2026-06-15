@@ -24,3 +24,6 @@ vcpkg_installed/
 
 # スクリーンショット・一時ファイル
 screenshot.png
+
+# セーブデータ（個人のプレイ記録はコミットしない）
+highscore.txt
