@@ -38,6 +38,18 @@ void Board::lock(const Tetromino& t) {
     }
 }
 
+std::vector<int> Board::getFullLineRows() const {
+    std::vector<int> rows;
+    for (int r = 0; r < BOARD_ROWS; r++) {
+        bool full = true;
+        for (int c = 0; c < BOARD_COLS; c++) {
+            if (grid_[r][c] == TetrominoType::None) { full = false; break; }
+        }
+        if (full) rows.push_back(r);
+    }
+    return rows;
+}
+
 int Board::countFullLines() const {
     int count = 0;
     for (int r = 0; r < BOARD_ROWS; r++) {

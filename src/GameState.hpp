@@ -3,6 +3,12 @@
 #include "Tetromino.hpp"
 #include "AudioManager.hpp"
 #include <optional>
+#include <vector>
+
+struct ParticleEmitData {
+    int col, row;
+    TetrominoType type;
+};
 
 // 演出フェーズ
 enum class AnimPhase { None, Flash };
@@ -44,6 +50,9 @@ public:
     // 音声イベント
     AudioFlags consumeAudioFlags();             // 呼ぶとコピーを返してフラグをリセット
 
+    // パーティクル発生データ
+    std::vector<ParticleEmitData> consumeParticleEmits();
+
 private:
     Board    board_;
     Tetromino current_;
@@ -74,6 +83,9 @@ private:
 
     // 音声イベントフラグ
     AudioFlags audioFlags_;
+
+    // パーティクル発生キュー
+    std::vector<ParticleEmitData> particleEmits_;
 
     bool onGround() const;
     bool tryMove(int dx, int dy);

@@ -1,11 +1,14 @@
 #include "Renderer.hpp"
 #include "AudioManager.hpp"
 #include "GameState.hpp"
+#include "ParticleSystem.hpp"
+#include "Tetromino.hpp"
 
 int main() {
-    Renderer     renderer;
-    AudioManager audio;
-    GameState    game;
+    Renderer       renderer;
+    AudioManager   audio;
+    GameState      game;
+    ParticleSystem particles;
 
     while (!renderer.shouldClose()) {
         float dt = GetFrameTime();
@@ -22,9 +25,15 @@ int main() {
         // 音声イベントを AudioManager に転送
         audio.play(game.consumeAudioFlags());
 
+        // パーティクル発生データを ParticleSystem に転送
+        for (auto& e : game.consumeParticleEmits())
+            particles.emit(e.col, e.row, typeToColor(e.type));
+        particles.update(dt);
+
         renderer.beginFrame();
         renderer.drawBoard();
         renderer.drawLockedCells(game.board());
+        particles.draw();
 
         // 演出中（フラッシュ）はピース・ゴーストを非表示にして白く光らせる
         if (game.isStarted() && !game.isGameOver()) {

@@ -142,6 +142,13 @@ void GameState::lockAndSpawn() {
 }
 
 void GameState::finalizeClear() {
+    // clearLines() の前にフル行の色情報を取得してパーティクルキューに積む
+    for (int row : board_.getFullLineRows()) {
+        for (int col = 0; col < BOARD_COLS; col++) {
+            particleEmits_.push_back({ col, row, board_.cell(row, col) });
+        }
+    }
+
     // ライン消去・スコア計算
     int lines = board_.clearLines();
     if (lines > 0) {
@@ -201,6 +208,12 @@ bool GameState::consumeShakeTrigger() {
 AudioFlags GameState::consumeAudioFlags() {
     AudioFlags copy = audioFlags_;
     audioFlags_ = AudioFlags{};
+    return copy;
+}
+
+std::vector<ParticleEmitData> GameState::consumeParticleEmits() {
+    std::vector<ParticleEmitData> copy = std::move(particleEmits_);
+    particleEmits_.clear();
     return copy;
 }
 
