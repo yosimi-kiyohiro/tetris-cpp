@@ -14,7 +14,7 @@ static const Color COL_SUBLABEL = {210, 210, 210, 255}; // 補助テキスト（
 static constexpr int MINI_CELL  = 20;
 static constexpr int PANEL_H    = 100;  // ラベル+ピース を収めるパネル高さ
 
-Renderer::Renderer() : fontOwned_(false) {
+Renderer::Renderer() : fontOwned_(false), shakeTimer_(0.0f), shakeOffset_(0.0f) {
     InitWindow(WIN_W, WIN_H, "Block Drop C++");
     SetTargetFPS(TARGET_FPS);
 
@@ -55,23 +55,46 @@ void Renderer::endFrame() {
     EndDrawing();
 }
 
+void Renderer::update(float dt) {
+    if (shakeTimer_ <= 0.0f) return;
+    shakeTimer_ -= dt;
+    if (shakeTimer_ <= 0.0f) {
+        shakeTimer_  = 0.0f;
+        shakeOffset_ = 0.0f;
+    } else {
+        // 残り時間 1.0→0.0 で振幅が減衰するサイン波（3px・約3往復）
+        float t = shakeTimer_ / 0.15f;
+        shakeOffset_ = sinf(t * 3.14159f * 3.0f) * 3.0f * t;
+    }
+}
+
+void Renderer::triggerShake() {
+    shakeTimer_ = 0.15f;
+}
+
+void Renderer::drawFlashOverlay(float alpha) {
+    unsigned char a = (unsigned char)(alpha * 200);
+    DrawRectangle(BOARD_X, BOARD_Y, BOARD_W, BOARD_H, {255, 255, 255, a});
+}
+
 void Renderer::drawBoard() {
-    DrawRectangle(BOARD_X, BOARD_Y, BOARD_W, BOARD_H, COL_BOARD_BG);
+    int ox = (int)shakeOffset_;
+    DrawRectangle(BOARD_X + ox, BOARD_Y, BOARD_W, BOARD_H, COL_BOARD_BG);
 
     for (int col = 1; col < BOARD_COLS; col++) {
-        int x = BOARD_X + col * CELL_SIZE;
+        int x = BOARD_X + ox + col * CELL_SIZE;
         DrawLine(x, BOARD_Y, x, BOARD_Y + BOARD_H, COL_GRID);
     }
     for (int row = 1; row < BOARD_ROWS; row++) {
         int y = BOARD_Y + row * CELL_SIZE;
-        DrawLine(BOARD_X, y, BOARD_X + BOARD_W, y, COL_GRID);
+        DrawLine(BOARD_X + ox, y, BOARD_X + ox + BOARD_W, y, COL_GRID);
     }
 
-    DrawRectangleLines(BOARD_X, BOARD_Y, BOARD_W, BOARD_H, WHITE);
+    DrawRectangleLines(BOARD_X + ox, BOARD_Y, BOARD_W, BOARD_H, WHITE);
 }
 
 void Renderer::drawCell(int col, int row, Color c) {
-    int x = BOARD_X + col * CELL_SIZE;
+    int x = BOARD_X + (int)shakeOffset_ + col * CELL_SIZE;
     int y = BOARD_Y + row * CELL_SIZE;
     DrawRectangle(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2, c);
 }
@@ -91,7 +114,7 @@ void Renderer::drawGhost(const Tetromino& t) {
     for (int r = 0; r < (int)t.shape.size(); r++) {
         for (int c = 0; c < (int)t.shape[r].size(); c++) {
             if (!t.shape[r][c] || t.y + r < 0) continue;
-            int x = BOARD_X + (t.x + c) * CELL_SIZE;
+            int x = BOARD_X + (int)shakeOffset_ + (t.x + c) * CELL_SIZE;
             int y = BOARD_Y + (t.y + r) * CELL_SIZE;
             DrawRectangle(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2, ghostFill);
             DrawRectangleLines(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2, ghostOutline);

@@ -38,6 +38,18 @@ void Board::lock(const Tetromino& t) {
     }
 }
 
+int Board::countFullLines() const {
+    int count = 0;
+    for (int r = 0; r < BOARD_ROWS; r++) {
+        bool full = true;
+        for (int c = 0; c < BOARD_COLS; c++) {
+            if (grid_[r][c] == TetrominoType::None) { full = false; break; }
+        }
+        if (full) count++;
+    }
+    return count;
+}
+
 int Board::clearLines() {
     int cleared = 0;
     // 下から上へスキャンする。上から消すと削除後のシフトで未チェック行が生まれるため、

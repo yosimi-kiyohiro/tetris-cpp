@@ -3,6 +3,9 @@
 #include "Tetromino.hpp"
 #include <optional>
 
+// 演出フェーズ
+enum class AnimPhase { None, Flash };
+
 class GameState {
 public:
     GameState();
@@ -32,6 +35,11 @@ public:
     bool isPaused()     const { return paused_; }
     bool isGameOver()   const { return gameOver_; }
 
+    // 演出
+    bool  isAnimating()        const { return animPhase_ != AnimPhase::None; }
+    float flashAlpha()         const;           // 0.0〜1.0（Rendererがフラッシュ強度に使う）
+    bool  consumeShakeTrigger();                // ハードドロップ時に true を1回返して消費
+
 private:
     Board    board_;
     Tetromino current_;
@@ -55,11 +63,17 @@ private:
     bool paused_;
     bool gameOver_;
 
+    // 演出フィールド
+    AnimPhase animPhase_;
+    float     animTimer_;
+    bool      shakeRequested_;
+
     bool onGround() const;
     bool tryMove(int dx, int dy);
     bool tryRotate();
     void tryHold();
     void hardDrop();
     void lockAndSpawn();
+    void finalizeClear();   // フラッシュ後にライン消去・スポーンを実行
     void resetState(int startLevel);
 };

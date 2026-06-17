@@ -10,7 +10,8 @@ public:
 
     bool          isValid(const Tetromino& t) const;
     void          lock(const Tetromino& t);
-    int           clearLines();  // 揃ったラインを消去して消去数を返す
+    int           countFullLines() const;  // 消去せずに揃ったライン数だけ返す
+    int           clearLines();            // 揃ったラインを消去して消去数を返す
     TetrominoType cell(int row, int col) const;
     TetrominoType nextType();
     TetrominoType peekNext();  // 消費せず次のタイプを覗く

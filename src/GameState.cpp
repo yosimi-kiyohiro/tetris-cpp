@@ -3,8 +3,9 @@
 #include "raylib.h"
 #include <algorithm>
 
-static constexpr float LOCK_DELAY = 0.5f;
-static constexpr int   MAX_RESETS = 15;
+static constexpr float LOCK_DELAY  = 0.5f;
+static constexpr int   MAX_RESETS  = 15;
+static constexpr float FLASH_DUR   = 0.2f;
 
 GameState::GameState() {
     SaveData d  = ScoreFile::load();
@@ -27,6 +28,9 @@ void GameState::resetState(int startLevel) {
     linesCleared_    = 0;
     gameOver_        = false;
     paused_          = false;
+    animPhase_       = AnimPhase::None;
+    animTimer_       = 0.0f;
+    shakeRequested_  = false;
 
     level_        = startLevel;
     fallInterval_ = std::max(0.1f, 1.0f - (level_ - 1) * 0.1f);
@@ -116,12 +120,23 @@ void GameState::tryHold() {
 
 void GameState::hardDrop() {
     while (tryMove(0, 1)) {}
+    shakeRequested_ = true;
     lockAndSpawn();
 }
 
 void GameState::lockAndSpawn() {
     board_.lock(current_);
 
+    // 消去できる行があればフラッシュ演出を開始（消去は finalizeClear で行う）
+    if (board_.countFullLines() > 0) {
+        animPhase_ = AnimPhase::Flash;
+        animTimer_ = 0.0f;
+        return;
+    }
+    finalizeClear();
+}
+
+void GameState::finalizeClear() {
     // ライン消去・スコア計算
     int lines = board_.clearLines();
     if (lines > 0) {
@@ -144,10 +159,11 @@ void GameState::lockAndSpawn() {
     lockDelayResets_ = 0;
     hasHeldThisTurn_ = false;
 
+    animPhase_ = AnimPhase::None;
+
     // スポーン位置が埋まっていたらゲームオーバー
     if (!board_.isValid(current_)) {
         gameOver_ = true;
-        // ハイスコアとレベル（到達した最高レベル）を保存
         if (score_ > highScore_) highScore_ = score_;
         if (level_ > savedLevel_) savedLevel_ = level_;
         ScoreFile::save(highScore_, savedLevel_);
@@ -159,6 +175,18 @@ Tetromino GameState::calcGhost() const {
     while (board_.isValid(ghost)) ghost.y++;
     ghost.y--;
     return ghost;
+}
+
+float GameState::flashAlpha() const {
+    if (animPhase_ != AnimPhase::Flash) return 0.0f;
+    // フラッシュ開始直後が最大・時間とともに薄れる
+    return 1.0f - (animTimer_ / FLASH_DUR);
+}
+
+bool GameState::consumeShakeTrigger() {
+    if (!shakeRequested_) return false;
+    shakeRequested_ = false;
+    return true;
 }
 
 TetrominoType GameState::nextPeek() {
@@ -185,6 +213,7 @@ void GameState::handleInput() {
         return;
     }
     if (paused_) return;
+    if (isAnimating()) return;  // 演出中は入力無視
 
     if (IsKeyPressed(KEY_LEFT))  tryMove(-1, 0);
     if (IsKeyPressed(KEY_RIGHT)) tryMove( 1, 0);
@@ -196,6 +225,15 @@ void GameState::handleInput() {
 void GameState::update(float dt) {
     if (!started_ || paused_ || gameOver_) return;
     dt = std::min(dt, 0.05f);
+
+    // フラッシュ演出の更新
+    if (animPhase_ == AnimPhase::Flash) {
+        animTimer_ += dt;
+        if (animTimer_ >= FLASH_DUR) {
+            finalizeClear();
+        }
+        return;  // 演出中はゲームロジックを止める
+    }
 
     if (onGround()) {
         lockDelayTimer_ += dt;

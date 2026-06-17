@@ -6,17 +6,28 @@ int main() {
     GameState game;
 
     while (!renderer.shouldClose()) {
+        float dt = GetFrameTime();
+
         game.handleInput();
-        game.update(GetFrameTime());
+        game.update(dt);
+        renderer.update(dt);
+
+        // ハードドロップのシェイクトリガーを Renderer に転送
+        if (game.consumeShakeTrigger()) renderer.triggerShake();
 
         renderer.beginFrame();
         renderer.drawBoard();
         renderer.drawLockedCells(game.board());
 
-        // スタート済みでゲームオーバーでない間だけピース・ゴーストを描く
+        // 演出中（フラッシュ）はピース・ゴーストを非表示にして白く光らせる
         if (game.isStarted() && !game.isGameOver()) {
-            renderer.drawGhost(game.calcGhost());
-            renderer.drawPiece(game.current());
+            if (!game.isAnimating()) {
+                renderer.drawGhost(game.calcGhost());
+                renderer.drawPiece(game.current());
+            }
+            if (game.flashAlpha() > 0.0f) {
+                renderer.drawFlashOverlay(game.flashAlpha());
+            }
         }
 
         renderer.drawHoldPanel(game.holdType());
