@@ -9,7 +9,7 @@ export PATH="/c/w64devkit/w64devkit/bin:$PATH"
 cd "$(dirname "$0")/.." || exit 1
 
 echo "ビルド中..."
-g++ src/main.cpp src/Renderer.cpp src/Tetromino.cpp src/Board.cpp src/GameState.cpp src/ScoreFile.cpp \
+g++ src/main.cpp src/Renderer.cpp src/Tetromino.cpp src/Board.cpp src/GameState.cpp src/ScoreFile.cpp src/AudioManager.cpp \
     -o tetris.exe \
     -I C:/raylib/raylib-6.0_win64_mingw-w64/include \
     -L C:/raylib/raylib-6.0_win64_mingw-w64/lib \

@@ -31,6 +31,7 @@ void GameState::resetState(int startLevel) {
     animPhase_       = AnimPhase::None;
     animTimer_       = 0.0f;
     shakeRequested_  = false;
+    audioFlags_      = AudioFlags{};
 
     level_        = startLevel;
     fallInterval_ = std::max(0.1f, 1.0f - (level_ - 1) * 0.1f);
@@ -78,6 +79,7 @@ bool GameState::tryMove(int dx, int dy) {
         lockDelayTimer_ = 0.0f;
         lockDelayResets_++;
     }
+    audioFlags_.move = true;
     return true;
 }
 
@@ -95,6 +97,7 @@ bool GameState::tryRotate() {
                 lockDelayTimer_ = 0.0f;
                 lockDelayResets_++;
             }
+            audioFlags_.rotate = true;
             return true;
         }
     }
@@ -120,6 +123,8 @@ void GameState::tryHold() {
 
 void GameState::hardDrop() {
     while (tryMove(0, 1)) {}
+    audioFlags_.move     = false;  // 落下中の move 音をキャンセル
+    audioFlags_.hardDrop = true;
     shakeRequested_ = true;
     lockAndSpawn();
 }
@@ -149,6 +154,9 @@ void GameState::finalizeClear() {
         if (newLevel > level_) {
             level_        = newLevel;
             fallInterval_ = std::max(0.1f, 1.0f - (level_ - 1) * 0.1f);
+            audioFlags_.levelUp = true;
+        } else {
+            audioFlags_.clear = true;
         }
     }
 
@@ -164,6 +172,7 @@ void GameState::finalizeClear() {
     // スポーン位置が埋まっていたらゲームオーバー
     if (!board_.isValid(current_)) {
         gameOver_ = true;
+        audioFlags_.gameOver = true;
         if (score_ > highScore_) highScore_ = score_;
         if (level_ > savedLevel_) savedLevel_ = level_;
         ScoreFile::save(highScore_, savedLevel_);
@@ -187,6 +196,12 @@ bool GameState::consumeShakeTrigger() {
     if (!shakeRequested_) return false;
     shakeRequested_ = false;
     return true;
+}
+
+AudioFlags GameState::consumeAudioFlags() {
+    AudioFlags copy = audioFlags_;
+    audioFlags_ = AudioFlags{};
+    return copy;
 }
 
 TetrominoType GameState::nextPeek() {

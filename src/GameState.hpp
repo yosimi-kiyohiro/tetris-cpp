@@ -1,6 +1,7 @@
 #pragma once
 #include "Board.hpp"
 #include "Tetromino.hpp"
+#include "AudioManager.hpp"
 #include <optional>
 
 // 演出フェーズ
@@ -40,6 +41,9 @@ public:
     float flashAlpha()         const;           // 0.0〜1.0（Rendererがフラッシュ強度に使う）
     bool  consumeShakeTrigger();                // ハードドロップ時に true を1回返して消費
 
+    // 音声イベント
+    AudioFlags consumeAudioFlags();             // 呼ぶとコピーを返してフラグをリセット
+
 private:
     Board    board_;
     Tetromino current_;
@@ -64,9 +68,12 @@ private:
     bool gameOver_;
 
     // 演出フィールド
-    AnimPhase animPhase_;
-    float     animTimer_;
-    bool      shakeRequested_;
+    AnimPhase  animPhase_;
+    float      animTimer_;
+    bool       shakeRequested_;
+
+    // 音声イベントフラグ
+    AudioFlags audioFlags_;
 
     bool onGround() const;
     bool tryMove(int dx, int dy);

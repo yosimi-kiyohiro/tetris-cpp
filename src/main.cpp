@@ -1,19 +1,26 @@
 #include "Renderer.hpp"
+#include "AudioManager.hpp"
 #include "GameState.hpp"
 
 int main() {
-    Renderer  renderer;
-    GameState game;
+    Renderer     renderer;
+    AudioManager audio;
+    GameState    game;
 
     while (!renderer.shouldClose()) {
         float dt = GetFrameTime();
 
         game.handleInput();
+        audio.handleInput();
         game.update(dt);
         renderer.update(dt);
+        audio.update(dt);
 
         // ハードドロップのシェイクトリガーを Renderer に転送
         if (game.consumeShakeTrigger()) renderer.triggerShake();
+
+        // 音声イベントを AudioManager に転送
+        audio.play(game.consumeAudioFlags());
 
         renderer.beginFrame();
         renderer.drawBoard();
