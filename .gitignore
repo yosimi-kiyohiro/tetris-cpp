@@ -28,5 +28,8 @@ screenshot.png
 # Claude へのプロジェクト説明書（個人環境向け）
 AGENTS.md
 
+# emscripten SDK（ローカルビルド環境）
+emsdk/
+
 # セーブデータ（個人のプレイ記録はコミットしない）
 highscore.txt

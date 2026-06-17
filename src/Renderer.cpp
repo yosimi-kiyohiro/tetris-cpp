@@ -22,6 +22,8 @@ Renderer::Renderer() : fontOwned_(false), shakeTimer_(0.0f), shakeOffset_(0.0f) 
         "ブロックドロップスコアレベルライン消去"
         "ゲームオーバースタートニューゲーム一時停止再開リ"
         "ホールドネクストハイから継続全クリア"
+        "移動回転落下中"
+        "←↑→↓"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
         "0123456789 :/-.![].";
     int cpCount = 0;
@@ -268,14 +270,19 @@ void Renderer::drawStartOverlay(int savedLevel) {
     }
 
     drawCenteredTextOutlined(jpFont_, "A: 全クリア   L: レベルクリア", midY + 60, 24, sub);
+    drawCenteredTextOutlined(jpFont_, "← → : 移動  ↑ : 回転  ↓ : 落下",    midY + 96,  20, sub);
+    drawCenteredTextOutlined(jpFont_, "SPACE : ハードドロップ  C : ホールド", midY + 124, 20, sub);
+    drawCenteredTextOutlined(jpFont_, "P / Esc : 一時停止",                   midY + 152, 20, sub);
 }
 
 void Renderer::drawPauseOverlay() {
     DrawRectangle(BOARD_X, BOARD_Y, BOARD_W, BOARD_H, {0, 0, 0, 200});
 
     float midY = BOARD_Y + BOARD_H / 2.0f;
-    drawCenteredTextOutlined(jpFont_, "一時停止", midY - 22, 34, WHITE);
-    drawCenteredTextOutlined(jpFont_, "P: 再開",  midY + 22, 26, WHITE);
+    Color gold = {255, 220, 80, 255};
+
+    drawCenteredTextOutlined(jpFont_, "一時停止中",      midY - 40, 38, gold);
+    drawCenteredTextOutlined(jpFont_, "P / Esc : 再開", midY + 20, 28, WHITE);
 }
 
 void Renderer::drawGameOverOverlay(int savedLevel) {
